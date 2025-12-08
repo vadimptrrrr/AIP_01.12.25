@@ -55,10 +55,10 @@ namespace top
     return f.right_top.x - f.left_bot.x + 1;
   }
 
-  void get_points(IDraw* b, p_t** ps, size_t& s)
+  size_t get_points(IDraw* b, p_t** ps, size_t s)
   {
     size_t k = 1;
-    
+
     p_t start = b->begin();
     p_t next = b->next(start);
     while(start != next)
@@ -68,16 +68,7 @@ namespace top
       next = b->next(start);
     }
 
-    p_t* arr_p = nullptr;
-    try
-    {
-      arr_p = new p_t[s + k];
-    }
-    catch(...)
-    {
-      std::cerr << "Memory error" << '\n';
-      throw;
-    }
+    p_t* arr_p = new p_t[s + k];
 
     for(size_t i = 0; i < s; ++i)
     {
@@ -92,11 +83,17 @@ namespace top
     delete[] *ps;
     *ps = arr_p;
     s += k;
+    return s;
   }
 
   frame_t build_frame(const p_t* ps, size_t s)
   {
-    size_t minx = ps[0].x, miny = ps[0].y,
+    if(!s)
+    {
+      throw std::logic_error("bad size");
+    }
+
+    int minx = ps[0].x, miny = ps[0].y,
     maxx = ps[0].x, maxy = ps[0].y;
 
     for (size_t i = 1; i < s; ++i)
@@ -106,7 +103,10 @@ namespace top
       miny = (ps[i].y < miny)? ps[i].y : miny;
       maxy = (ps[i].y > maxy)? ps[i].y : maxy;
     }
-    frame_t ans = {{minx, miny}, {maxx, maxy}};
+    p_t aa{minx, miny};
+    p_t bb{maxx, maxy};
+    frame_t ans = {aa, bb};
+    return ans;
   }
 
   char* build_canvas(frame_t f, char fill)
