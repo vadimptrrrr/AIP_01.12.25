@@ -184,7 +184,7 @@ int main()
     f[0] = new Dot(0, 0);
     f[1] = new Vert_line(5, -3, 3);
     f[2] = new Hor_line(-5, 0, -2);
-    f[3] = new Alfa_line({1, 1}, {10, 10});
+    f[3] = new Alfa_line({-3, 3}, {6, 12});
     for(size_t i = 0; i < 4; ++i)
     {
       s = get_points((f[i]), &pts, s);
