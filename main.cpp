@@ -24,6 +24,18 @@ namespace top
     p_t d;
   };
 
+  struct Vert_line: IDraw
+  {
+    Vert_line(int x, int starty, int endy);
+    p_t begin() const override;
+    p_t next(p_t) const override;
+
+    private:
+    int x;
+    int sy;
+    int ey;
+  };
+
   struct frame_t
   {
     p_t left_bot;
@@ -38,11 +50,6 @@ namespace top
   bool operator!=(p_t a, p_t b)
   {
     return !(a == b);
-  }
-
-  void make_f(IDraw** b, size_t k)
-  {
-
   }
 
   size_t rows(frame_t f)
@@ -122,7 +129,7 @@ namespace top
 
   void paint_canvas(char* cnv, frame_t fr, p_t* p, char f)
   {
-    int dx = p->x -fr.left_bot.x;
+    int dx = p->x - fr.left_bot.x;
     int dy = fr.right_top.y - p->y;
     cnv[dy * cols(fr) + dx] = f;
   }
@@ -152,8 +159,8 @@ int main()
   try
   {
     f[0] = new Dot(0, 0);
-    f[1] = new Dot(5, 7);
-    f[2] = new Dot(-5, -2);
+    f[1] = new Vert_line(5, -3, 3);
+    f[2] = new Dot(-5, -3);
     for(size_t i = 0; i < 3; ++i)
     {
       s = get_points((f[i]), &pts, s);
@@ -187,12 +194,34 @@ top::Dot::Dot(p_t p):
   d{p}
 {}
 
-top::p_t top::Dot::begin() const{
+top::p_t top::Dot::begin() const
+{
   return d;
 }
-top::p_t top::Dot::next(p_t prev) const{
+top::p_t top::Dot::next(p_t prev) const
+{
   if (prev != begin()) {
     throw std::logic_error("bad impl");
   }
   return d;
+}
+
+top::Vert_line::Vert_line(int xx, int syy, int eyy):
+  IDraw(),
+  x{xx}, sy{syy}, ey{eyy}
+{}
+
+top::p_t top::Vert_line::begin() const
+{
+  return {x, sy};
+}
+
+top::p_t top::Vert_line::next(p_t p) const
+{
+  p_t end = {x, ey};
+  if (p == end)
+  {
+    return end;
+  }
+  return {p.x, p.y + 1};
 }
