@@ -36,6 +36,18 @@ namespace top
     int ey;
   };
 
+  struct Hor_line: IDraw
+  {
+    Hor_line(int sx, int endx, int y);
+    p_t begin() const override;
+    p_t next(p_t) const override;
+
+    private:
+    int sx;
+    int ex;
+    int y;
+  };
+
   struct frame_t
   {
     p_t left_bot;
@@ -160,7 +172,7 @@ int main()
   {
     f[0] = new Dot(0, 0);
     f[1] = new Vert_line(5, -3, 3);
-    f[2] = new Dot(-5, -3);
+    f[2] = new Hor_line(-5, 0, -2);
     for(size_t i = 0; i < 3; ++i)
     {
       s = get_points((f[i]), &pts, s);
@@ -224,4 +236,24 @@ top::p_t top::Vert_line::next(p_t p) const
     return end;
   }
   return {p.x, p.y + 1};
+}
+
+top::Hor_line::Hor_line(int sxx, int exx, int yy):
+  IDraw(),
+  sx{sxx}, ex{exx}, y{yy}
+{}
+
+top::p_t top::Hor_line::begin() const
+{
+  return {sx, y};
+}
+
+top::p_t top::Hor_line::next(p_t p) const
+{
+  p_t end = {ex, y};
+  if (p == end)
+  {
+    return end;
+  }
+  return {p.x + 1, y};
 }
