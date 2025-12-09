@@ -48,6 +48,17 @@ namespace top
     int y;
   };
 
+  struct Alfa_line: IDraw
+  {
+    Alfa_line(p_t a, p_t b);
+    p_t begin() const override;
+    p_t next(p_t) const override;
+
+    private:
+    p_t start;
+    p_t end;
+  };
+
   struct frame_t
   {
     p_t left_bot;
@@ -164,7 +175,7 @@ int main()
 {
   using namespace top;
   int err = 0;
-  IDraw* f[3] = {};
+  IDraw* f[4] = {};
   p_t * pts = nullptr;
   size_t s = 0;
 
@@ -173,7 +184,8 @@ int main()
     f[0] = new Dot(0, 0);
     f[1] = new Vert_line(5, -3, 3);
     f[2] = new Hor_line(-5, 0, -2);
-    for(size_t i = 0; i < 3; ++i)
+    f[3] = new Alfa_line({1, 1}, {10, 10});
+    for(size_t i = 0; i < 4; ++i)
     {
       s = get_points((f[i]), &pts, s);
     }
@@ -256,4 +268,23 @@ top::p_t top::Hor_line::next(p_t p) const
     return end;
   }
   return {p.x + 1, y};
+}
+
+top::Alfa_line::Alfa_line(p_t aa, p_t bb):
+  IDraw(),
+  start{aa}, end{bb}
+{}
+
+top::p_t top::Alfa_line::begin() const
+{
+  return start;
+}
+
+top::p_t top::Alfa_line::next(p_t p) const
+{
+  if (p == end)
+  {
+    return end;
+  }
+  return {p.x + 1, p.y + 1};
 }
