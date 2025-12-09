@@ -72,7 +72,7 @@ namespace top
 
     for(size_t i = 0; i < s; ++i)
     {
-      arr_p[i] = *ps[i];
+      arr_p[i] = (*ps)[i];
     }
     arr_p[s] = (b->begin());
     for(size_t i = 1; i < k; ++i)
@@ -120,14 +120,23 @@ namespace top
     return n;
   }
 
-  void paint_canvas(char* cnv, frame_t fr, const p_t* ps, size_t k, char f)
+  void paint_canvas(char* cnv, frame_t fr, p_t* p, char f)
   {
-
+    int dx = p->x -fr.left_bot.x;
+    int dy = fr.right_top.y - p->y;
+    cnv[dy * cols(fr) + dx] = f;
   }
 
-  void print_canvas(const char* cnv, frame_t fr)
+  void print_canvas(std::ostream& os, char* cnv, frame_t fr)
   {
-
+    for(size_t i = 0; i < rows(fr); ++i)
+    {
+      for(size_t j = 0; j < cols(fr); ++j)
+      {
+        os << cnv[i * cols(fr) + j];
+      }
+      os << "\n";
+    }
   }
 }
 
@@ -137,31 +146,35 @@ int main()
   using namespace top;
   int err = 0;
   IDraw* f[3] = {};
-  char* cnv = nullptr;
-  p_t* p = nullptr;
-  p_t** kp = nullptr;
+  p_t * pts = nullptr;
+  size_t s = 0;
 
   try
   {
-    make_f(f, 3);
-    size_t s = 0;
-    for(size_t i =0; i < 3; ++i)
+    f[0] = new Dot(0, 0);
+    f[1] = new Dot(5, 7);
+    f[2] = new Dot(-5, -2);
+    for(size_t i = 0; i < 3; ++i)
     {
-      get_points(f[i], kp, s);
+      s = get_points((f[i]), &pts, s);
     }
-    frame_t fr = build_frame(p, s);
-    cnv = build_canvas(fr, '.');
-    paint_canvas(cnv, fr, p, s, '#');
-    print_canvas(cnv, fr);
+    frame_t fr = build_frame(pts, s);
+    char* cnv = build_canvas(fr, '.');
+    for (size_t i = 0; i < s; ++i)
+    {
+      paint_canvas(cnv, fr, pts + i, '#');
+    }
+    print_canvas(std::cout, cnv, fr);
   } catch (...) {
-    err = 1;
-    delete f[0];
-    delete f[1];
-    delete f[2];
-    delete[] p;
-    delete[] cnv;
-    return err;
+    err = 2;
+    std::cerr << "Bad drawing\n";
   }
+  err = 1;
+  delete f[0];
+  delete f[1];
+  delete f[2];
+  delete[] pts;
+  return err;
 }
 
 top::Dot::Dot(int x, int y):
