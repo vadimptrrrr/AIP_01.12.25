@@ -59,6 +59,25 @@ namespace top
     p_t end;
   };
 
+  struct Square:IDraw
+  {
+    Square(p_t pos,int width);
+    p_t begin() const override;
+    p_t next(p_t) const override;
+    p_t pos;
+    int w;
+  };
+
+  struct Rectangle:IDraw
+  {
+    Rectangle(p_t pos,int width,int height);
+    p_t begin() const override;
+    p_t next(p_t) const override;
+    p_t pos;
+    int w;
+    int h;
+  };
+
   struct frame_t
   {
     p_t left_bot;
@@ -287,4 +306,60 @@ top::p_t top::Alfa_line::next(p_t p) const
     return end;
   }
   return {p.x + 1, p.y + 1};
+}
+
+top::Square::Square(p_t pos,int width):
+  pos(pos),
+  w(width)
+{}
+top::p_t top::Square::begin() const {
+  return pos;
+}
+top::p_t top::Square::next(p_t prev) const {
+
+  if (prev.x==pos.x && prev.y>pos.y)
+  {
+    return {prev.x,prev.y-1};
+  }
+  else if (prev.x==pos.x+w-1 && prev.y<pos.y+w-1)
+  {
+    return {prev.x,prev.y+1};
+  }
+  else if (prev.y==pos.y+w-1 && prev.x>pos.x)
+  {
+    return {prev.x-1,prev.y};
+  }
+  else if (prev.y==pos.y && prev.x<pos.x+w-1)
+  {
+    return {prev.x+1,prev.y};
+  }
+  return pos;
+}
+top::Rectangle::Rectangle(p_t pos,int width,int height):
+  pos(pos),
+  w(width),
+  h(height)
+{}
+top::p_t top::Rectangle::begin() const {
+  return pos;
+}
+top::p_t top::Rectangle::next(p_t prev) const
+{
+  if (prev.x==pos.x && prev.y>pos.y)
+  {
+    return {prev.x,prev.y-1};
+  }
+  else if (prev.x==pos.x+w-1 && prev.y<pos.y+h-1)
+  {
+    return {prev.x,prev.y+1};
+  }
+  else if (prev.y==pos.y+h-1 && prev.x>pos.x)
+  {
+    return {prev.x-1,prev.y};
+  }
+  else if (prev.y==pos.y && prev.x<pos.x+w-1)
+  {
+    return {prev.x+1,prev.y};
+  }
+  return pos;
 }
