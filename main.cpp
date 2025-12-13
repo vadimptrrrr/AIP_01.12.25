@@ -104,35 +104,31 @@ namespace top
     return f.right_top.x - f.left_bot.x + 1;
   }
 
+    void extend(p_t** pts, size_t s, p_t p)
+  {
+    size_t upd_s = s + 1;
+    p_t* res = new p_t[upd_s];
+    for (size_t i = 0; i < s; ++i)
+    {
+      res[i] = (*pts)[i];
+    }
+    res[s] = p;
+    delete[] *pts;
+    *pts = res;
+  }
+
   size_t get_points(IDraw* b, p_t** ps, size_t s)
   {
-    size_t k = 1;
-
-    p_t start = b->begin();
-    p_t next = b->next(start);
-    while(start != next)
+    p_t p = b->begin();
+    extend(ps, s, p);
+    size_t delta = 1;
+    while (b->next(p) != b->begin())
     {
-      ++k;
-      start = next;
-      next = b->next(start);
+      p = b->next(p);
+      extend(ps, s + delta, p);
+      ++delta;
     }
-
-    p_t* arr_p = new p_t[s + k];
-
-    for(size_t i = 0; i < s; ++i)
-    {
-      arr_p[i] = (*ps)[i];
-    }
-    arr_p[s] = (b->begin());
-    for(size_t i = 1; i < k; ++i)
-    {
-      arr_p[s+i] = b->next(arr_p[s+i-1]);
-    }
-
-    delete[] *ps;
-    *ps = arr_p;
-    s += k;
-    return s;
+    return delta;
   }
 
   frame_t build_frame(const p_t* ps, size_t s)
@@ -194,7 +190,7 @@ int main()
 {
   using namespace top;
   int err = 0;
-  IDraw* f[4] = {};
+  IDraw* f[6] = {};
   p_t * pts = nullptr;
   size_t s = 0;
 
@@ -204,9 +200,11 @@ int main()
     f[1] = new Vert_line(5, -3, 3);
     f[2] = new Hor_line(-5, 0, -2);
     f[3] = new Alfa_line({-3, 3}, {6, 12});
-    for(size_t i = 0; i < 4; ++i)
+    f[4] = new Square({6, 6}, 3);
+    f[5] = new Rectangle({-6, -6}, 2, 3);
+    for(size_t i = 0; i < 6; ++i)
     {
-      s = get_points((f[i]), &pts, s);
+      s += get_points((f[i]), &pts, s);
     }
     frame_t fr = build_frame(pts, s);
     char* cnv = build_canvas(fr, '.');
@@ -223,6 +221,9 @@ int main()
   delete f[0];
   delete f[1];
   delete f[2];
+  delete f[3];
+  delete f[4];
+  delete f[5];
   delete[] pts;
   return err;
 }
@@ -264,7 +265,7 @@ top::p_t top::Vert_line::next(p_t p) const
   p_t end = {x, ey};
   if (p == end)
   {
-    return end;
+    return begin();
   }
   return {p.x, p.y + 1};
 }
@@ -284,7 +285,7 @@ top::p_t top::Hor_line::next(p_t p) const
   p_t end = {ex, y};
   if (p == end)
   {
-    return end;
+    return begin();
   }
   return {p.x + 1, y};
 }
@@ -303,7 +304,7 @@ top::p_t top::Alfa_line::next(p_t p) const
 {
   if (p == end)
   {
-    return end;
+    return begin();
   }
   return {p.x + 1, p.y + 1};
 }
@@ -312,9 +313,11 @@ top::Square::Square(p_t pos,int width):
   pos(pos),
   w(width)
 {}
+
 top::p_t top::Square::begin() const {
   return pos;
 }
+
 top::p_t top::Square::next(p_t prev) const {
 
   if (prev.x==pos.x && prev.y>pos.y)
@@ -335,14 +338,17 @@ top::p_t top::Square::next(p_t prev) const {
   }
   return pos;
 }
+
 top::Rectangle::Rectangle(p_t pos,int width,int height):
   pos(pos),
   w(width),
   h(height)
 {}
+
 top::p_t top::Rectangle::begin() const {
   return pos;
 }
+
 top::p_t top::Rectangle::next(p_t prev) const
 {
   if (prev.x==pos.x && prev.y>pos.y)
