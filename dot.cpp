@@ -16,6 +16,7 @@ top::p_t top::Dot::begin() const
 {
   return d;
 }
+
 top::p_t top::Dot::next(p_t prev) const
 {
   if (prev != begin()) {
