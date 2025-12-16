@@ -1,17 +1,17 @@
-#ifndef SQUARE_HPP
-#define SQUARE_HPP
+#ifndef RECTANGLE_HPP
+#define RECTANGLE_HPP
 #include "idraw.hpp"
-
 namespace top
 {
-  struct Square:IDraw
+  struct Rectangle:IDraw
   {
-    Square(p_t, int);
+    Rectangle(p_t pos,int width,int height);
     p_t begin() const override;
     p_t next(p_t) const override;
     p_t pos;
     int w;
+    int h;
   };
 } // namespace top
 
-#endif // !SQUARE_HPP
+#endif // !RECTANGLE_HPP

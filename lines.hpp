@@ -1,6 +1,5 @@
 #ifndef LINES_HPP
 #define LINES_HPP
-#include "geom.hpp"
 #include "idraw.hpp"
 namespace top
 {
