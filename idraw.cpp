@@ -1,20 +1,17 @@
 #include "idraw.hpp"
 
-namespase
+static void extend(top::p_t** pts, size_t s, top::p_t p)
 {
-  void extend(top::p_t** pts, size_t s, top::p_t p)
+  size_t upd_s = s + 1;
+  top::p_t* res = new top::p_t[upd_s];
+  for (size_t i = 0; i < s; ++i)
   {
-    size_t upd_s = s + 1;
-    top::p_t* res = new top::p_t[upd_s];
-    for (size_t i = 0; i < s; ++i)
-    {
-      res[i] = (*pts)[i];
-    }
-    res[s] = p;
-    delete[] *pts;
-    *pts = res;
+    res[i] = (*pts)[i];
   }
-} // namespase anonim
+  res[s] = p;
+  delete[] *pts;
+  *pts = res;
+}
 
 size_t top::get_points(IDraw* b, p_t** ps, size_t s)
 {
